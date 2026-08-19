@@ -4,13 +4,14 @@ const axios = require("axios");
 const generateImage = async (prompt) => {
     try {
         const response = await axios.post(
-            "https://gateway.pixazo.ai/flux-1-schnell/v1/getData",
+            "https://gateway.pixazo.ai/getImage/v1/getSDXLImage",
             {
                 prompt: prompt,
-                num_steps: 4,
-                seed: 15,
-                height: 512,
-                width: 512,
+                negative_prompt: "blurry, low quality, distorted, bad anatomy, extra fingers, extra limbs, watermark, text",
+                height: 1024,
+                width: 1024,
+                num_steps: 20,
+                guidance_scale: 5,
             },
             {
                 headers: {
