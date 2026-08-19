@@ -3,16 +3,14 @@ const axios = require("axios");
 const generateImage = async (prompt) => {
     try {
 
-        // 🎨 Improve the user's prompt
         const enhancedPrompt = `
-High quality, highly detailed digital artwork.
-Sharp focus, clean details, professional composition,
-beautiful lighting, detailed textures, realistic shadows,
-excellent proportions, polished final image.
+High quality, photorealistic image,
+sharp focus, realistic skin texture,
+natural lighting, detailed face,
+professional photography, realistic proportions,
+highly detailed, cinematic quality.
 
 ${prompt}
-
-Highly detailed, visually appealing, clean and sharp result.
 `;
 
         const response = await axios.post(
@@ -21,13 +19,15 @@ Highly detailed, visually appealing, clean and sharp result.
                 prompt: enhancedPrompt,
 
                 negative_prompt:
-                    "blurry, low quality, pixelated, distorted, deformed, ugly, bad anatomy, bad proportions, extra fingers, missing fingers, extra limbs, duplicate body parts, disfigured face, malformed hands, cropped, watermark, text, logo, noisy, oversaturated",
+                    "blurry, low quality, pixelated, distorted, deformed, ugly, bad anatomy, bad proportions, extra fingers, extra limbs, duplicate, cropped, watermark, text, logo, noisy",
 
                 height: 1024,
                 width: 1024,
 
-                num_steps: 30,
+                // Pixazo SDXL maximum = 20
+                num_steps: 20,
 
+                // Better prompt adherence
                 guidance_scale: 7,
             },
             {
@@ -40,13 +40,7 @@ Highly detailed, visually appealing, clean and sharp result.
             }
         );
 
-        console.log(
-            "PIXAZO RESPONSE:",
-            response.data
-        );
-
-        // Pixazo response:
-        // { imageUrl: "https://....png" }
+        console.log("PIXAZO RESPONSE:", response.data);
 
         if (!response.data?.imageUrl) {
             throw new Error("IMAGE_URL_NOT_FOUND");
@@ -62,9 +56,7 @@ Highly detailed, visually appealing, clean and sharp result.
             error.response?.data || error.message
         );
 
-        // 🚫 Rate limit
         if (error.response?.status === 429) {
-
             const rateLimitError =
                 new Error("IMAGE_RATE_LIMIT");
 
