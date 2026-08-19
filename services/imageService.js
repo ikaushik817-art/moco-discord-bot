@@ -2,16 +2,33 @@ const axios = require("axios");
 
 const generateImage = async (prompt) => {
     try {
+
+        // 🎨 Improve the user's prompt
+        const enhancedPrompt = `
+High quality, highly detailed digital artwork.
+Sharp focus, clean details, professional composition,
+beautiful lighting, detailed textures, realistic shadows,
+excellent proportions, polished final image.
+
+${prompt}
+
+Highly detailed, visually appealing, clean and sharp result.
+`;
+
         const response = await axios.post(
             "https://gateway.pixazo.ai/getImage/v1/getSDXLImage",
             {
-                prompt: prompt,
+                prompt: enhancedPrompt,
+
                 negative_prompt:
-                    "blurry, low quality, distorted, bad anatomy, extra fingers, extra limbs, watermark, text",
+                    "blurry, low quality, pixelated, distorted, deformed, ugly, bad anatomy, bad proportions, extra fingers, missing fingers, extra limbs, duplicate body parts, disfigured face, malformed hands, cropped, watermark, text, logo, noisy, oversaturated",
+
                 height: 1024,
                 width: 1024,
-                num_steps: 20,
-                guidance_scale: 5,
+
+                num_steps: 30,
+
+                guidance_scale: 7,
             },
             {
                 headers: {
@@ -28,7 +45,7 @@ const generateImage = async (prompt) => {
             response.data
         );
 
-        // Pixazo returns:
+        // Pixazo response:
         // { imageUrl: "https://....png" }
 
         if (!response.data?.imageUrl) {
@@ -45,7 +62,9 @@ const generateImage = async (prompt) => {
             error.response?.data || error.message
         );
 
+        // 🚫 Rate limit
         if (error.response?.status === 429) {
+
             const rateLimitError =
                 new Error("IMAGE_RATE_LIMIT");
 
