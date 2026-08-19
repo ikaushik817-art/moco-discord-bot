@@ -1,4 +1,3 @@
-
 const axios = require("axios");
 
 const generateImage = async (prompt) => {
@@ -7,7 +6,8 @@ const generateImage = async (prompt) => {
             "https://gateway.pixazo.ai/getImage/v1/getSDXLImage",
             {
                 prompt: prompt,
-                negative_prompt: "blurry, low quality, distorted, bad anatomy, extra fingers, extra limbs, watermark, text",
+                negative_prompt:
+                    "blurry, low quality, distorted, bad anatomy, extra fingers, extra limbs, watermark, text",
                 height: 1024,
                 width: 1024,
                 num_steps: 20,
@@ -23,29 +23,40 @@ const generateImage = async (prompt) => {
             }
         );
 
-        console.log("PIXAZO RESPONSE:", response.data);
+        console.log(
+            "PIXAZO RESPONSE:",
+            response.data
+        );
 
-        // Pixazo returns the generated image in its response
-        return response.data.output || response.data.image || response.data;
+        // Pixazo returns:
+        // { imageUrl: "https://....png" }
+
+        if (!response.data?.imageUrl) {
+            throw new Error("IMAGE_URL_NOT_FOUND");
+        }
+
+        return response.data.imageUrl;
 
     } catch (error) {
 
-    console.error(
-        "PIXAZO IMAGE ERROR:",
-        error.response?.status,
-        error.response?.data || error.message
-    );
+        console.error(
+            "PIXAZO IMAGE ERROR:",
+            error.response?.status,
+            error.response?.data || error.message
+        );
 
-    // Rate limit
-    if (error.response?.status === 429) {
-        const rateLimitError = new Error("IMAGE_RATE_LIMIT");
-        rateLimitError.code = "IMAGE_RATE_LIMIT";
-        throw rateLimitError;
+        if (error.response?.status === 429) {
+            const rateLimitError =
+                new Error("IMAGE_RATE_LIMIT");
+
+            rateLimitError.code =
+                "IMAGE_RATE_LIMIT";
+
+            throw rateLimitError;
+        }
+
+        throw error;
     }
-
-    throw error;
-}
 };
 
 module.exports = generateImage;
-
