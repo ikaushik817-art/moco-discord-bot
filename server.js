@@ -489,7 +489,7 @@ client.on("messageCreate", async (message) => {
 
             await message.channel.sendTyping();
 
-            const image = await generateImage(prompt);
+            const imageUrl = await generateImage(prompt);
 
             await message.reply({
                 content: "🎨 Done!",
