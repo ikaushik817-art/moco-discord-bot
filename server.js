@@ -492,13 +492,11 @@ client.on("messageCreate", async (message) => {
             const image = await generateImage(prompt);
 
             await message.reply({
-                content: "🖼️ Ye le bhai!",
-                files: [
-                    {
-                        attachment: image,
-                        name: "moco-image.jpg",
-                    },
-                ],
+                content: "🎨 Done!",
+                files: [{
+                    attachment: imageUrl,
+                    name: "moco-image.png"
+                }]
             });
 
             return;
